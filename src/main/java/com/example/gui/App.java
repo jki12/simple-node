@@ -32,7 +32,7 @@ public class App extends JFrame {
         this(WIDTH, HEIGHT);
     }
 
-    public JScrollPane generatJScrollPane() {
+    public JScrollPane generatJScrollPane(JPanel c) {
         final String[] listData = { "terminal input", "terminal output" };
         JList<String> list = new JList<>(listData);
 
@@ -51,6 +51,11 @@ public class App extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) { // add double click event.
                     System.out.println("occured double click event - created node" + list.getSelectedValue());
+
+                    var node = new Node(list.getSelectedValue());
+
+                    c.add(node);
+                    c.repaint();
                 }
             }
 
@@ -89,18 +94,7 @@ public class App extends JFrame {
         setSize(width, height);
         c.setLayout(new GridBagLayout());
 
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.gridwidth = 1;
-        gbc.gridheight = 1;
-        gbc.gridx = 1;
-        gbc.gridy = 1;
         gbc.insets = new Insets(10, 5, 10, 5);
-
-        var scrollPane = generatJScrollPane();
-        scrollPane.setPreferredSize(new Dimension(260, getHeight()));
-
-        c.add(scrollPane, gbc);
-
 
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridwidth = 1;
@@ -108,19 +102,23 @@ public class App extends JFrame {
         gbc.gridx = 0;
         gbc.gridy = 1;
 
-        var a = new JButton(); // to canvas.
-        a.setPreferredSize(new Dimension((int) (getWidth() * 0.75), getHeight()));
+        var canvas = new Canvas();
+        canvas.setPreferredSize(new Dimension((int) (getWidth() * 0.75), getHeight()));
+;
 
-        a.addActionListener(
-            new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    a.add(new Node("hey"));
-                }
-            }
-        );
+        c.add(canvas, gbc);
 
-        c.add(a, gbc);
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.gridwidth = 1;
+        gbc.gridheight = 1;
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        
+        var scrollPane = generatJScrollPane(canvas);
+        scrollPane.setPreferredSize(new Dimension(260, getHeight()));
+
+        c.add(scrollPane, gbc);
+        
 
         pack();
     }
