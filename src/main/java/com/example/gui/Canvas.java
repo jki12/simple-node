@@ -11,9 +11,9 @@ public class Canvas extends JPanel {
         setBorder(BorderFactory.createLineBorder(Color.black));
     }
 
-    public void paintComponent(Graphics g) { // test code.
+    public void paintComponent(Graphics g) { // TODO remove test code.
         super.paintComponent(g);
 
-        g.drawLine(10, 20, 20, 20);
+        g.drawLine(10, 20, 20, 20); // test code.
     }
 }
