@@ -6,7 +6,16 @@ import java.util.Queue;
 import com.example.message.Message;
 
 public class Wire {
-    Queue<Message> q = new LinkedList<>();
+    private String id;
+    private Queue<Message> q = new LinkedList<>();
+
+    public Wire() {
+        id = "";
+    }
+
+    public String getId() {
+        return id;
+    }
 
     public void put(Message message) {
         q.add(message);
