@@ -1,0 +1,40 @@
+@startuml
+
+class Wire {
+}
+
+abstract class Node {
+    #id: UUID
+    #createdDate: OffsetDateTime
+    #name: String
+}
+
+abstract class ActiveNode {
+    #startTime: long
+    #thread: Thread
+}
+
+abstract class WirableNode {
+    +wires: Wire[]
+}
+
+abstract class InputNode {
+}
+
+abstract class OutputNode {
+}
+
+class TerminalNode {
+    -br: BufferedReader
+}
+
+
+Node <|-- ActiveNode
+ActiveNode <|-- WirableNode
+InputNode <|-- TerminalNode
+WirableNode <|-- InputNode
+WirableNode <|-- OutputNode
+
+Wire *-- WirableNode
+
+@enduml
