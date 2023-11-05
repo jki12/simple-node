@@ -1,4 +1,4 @@
-package com.example.node.input;
+package com.example.node;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -6,11 +6,11 @@ import java.io.InputStreamReader;
 import com.example.message.Message;
 import com.example.message.TextMessage;
 
-public class TerminalNode extends InputNode {
+public class TerminalInputNode extends InputNode {
     private BufferedReader br;
 
-    public TerminalNode(String name, int count) {
-        super(name, count);
+    public TerminalInputNode(String name) {
+        super(name);
     }
 
     @Override
@@ -24,7 +24,7 @@ public class TerminalNode extends InputNode {
             String line = br.readLine();
             Message msg = new TextMessage(line);
 
-            output(msg);
+            // TODO output(msg);
         } catch (Exception ignore) {
         }
     }
