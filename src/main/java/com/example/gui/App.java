@@ -1,20 +1,17 @@
 package com.example.gui;
 
-import java.awt.Button;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.lang.reflect.Constructor;
 
 import javax.swing.JButton;
-import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -23,8 +20,11 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import com.example.CodeBuilder;
+import com.example.node.Node;
+
 public class App extends JFrame {
-    private static final String TITLE = "tester";
+    private static final String TITLE = "simple tester";
     private static final int WIDTH = 1200;
     private static final int HEIGHT = 800;
 
@@ -33,28 +33,41 @@ public class App extends JFrame {
     }
 
     public JScrollPane generatJScrollPane(JPanel c) {
-        final String[] listData = { "terminal input", "terminal output" };
+        final String[] listData = { "TerminalInputNode", "terminal output" }; // TODO change the name.
         JList<String> list = new JList<>(listData);
 
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        // int selected = -1;
         list.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                if (!e.getValueIsAdjusting()) System.out.println(list.getSelectedValue());
+                // if (!e.getValueIsAdjusting()) System.out.println(list.getSelectedValue());
             }
         });
 
         list.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) { // add double click event.
-                    System.out.println("occured double click event - created node" + list.getSelectedValue());
+                if (e.getClickCount() == 2) { // double click event.
+                    String selectedValue = list.getSelectedValue();
+                    System.out.println("occured double click event - created node " + selectedValue); // TODO log.
 
-                    var node = new Node(list.getSelectedValue());
+                    NodeBlock nodeBlock = new NodeBlock(selectedValue);
 
-                    c.add(node);
+                    try {
+                        Class<?> clazz = Class.forName("com.example.node." + selectedValue);
+                        Constructor<?> ctor = clazz.getConstructor(String.class);
+
+                        var node = ctor.newInstance("test"); // TODO change name.
+
+                        assert (node instanceof Node);
+                        CodeBuilder.add((Node) node);
+
+                    } catch (Exception ignore) {
+                        ignore.printStackTrace(); // TODO log.
+                    }
+
+                    c.add(nodeBlock);
                     c.repaint();
                 }
             }
@@ -85,7 +98,7 @@ public class App extends JFrame {
         super(TITLE);
 
         setVisible(true);
-        setLocationRelativeTo(null);
+        setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         GridBagConstraints gbc = new GridBagConstraints();
@@ -100,11 +113,10 @@ public class App extends JFrame {
         gbc.gridwidth = 1;
         gbc.gridheight = 1;
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = 0;
 
         var canvas = new Canvas();
         canvas.setPreferredSize(new Dimension((int) (getWidth() * 0.75), getHeight()));
-;
 
         c.add(canvas, gbc);
 
@@ -112,14 +124,29 @@ public class App extends JFrame {
         gbc.gridwidth = 1;
         gbc.gridheight = 1;
         gbc.gridx = 1;
-        gbc.gridy = 1;
+        gbc.gridy = 0;
         
         var scrollPane = generatJScrollPane(canvas);
-        scrollPane.setPreferredSize(new Dimension(260, getHeight()));
+        scrollPane.setPreferredSize(new Dimension(200, getHeight()));
 
         c.add(scrollPane, gbc);
-        
 
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.gridwidth = 1;
+        gbc.gridheight = 1;
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+
+        var runButton = new JButton("run");
+
+        runButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                CodeBuilder.getCode(); // TODO create code and compile, run.
+            }
+        });
+
+        c.add(runButton, gbc);
         pack();
     }
 }
