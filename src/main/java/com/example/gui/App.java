@@ -9,6 +9,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.lang.reflect.Constructor;
 
 import javax.swing.JButton;
@@ -23,6 +26,9 @@ import javax.swing.event.ListSelectionListener;
 import com.example.CodeBuilder;
 import com.example.node.Node;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class App extends JFrame {
     private static final String TITLE = "simple tester";
     private static final int WIDTH = 1200;
@@ -33,7 +39,7 @@ public class App extends JFrame {
     }
 
     public JScrollPane generatJScrollPane(JPanel c) {
-        final String[] listData = { "TerminalInputNode", "terminal output" }; // TODO change the name.
+        final String[] listData = { "TerminalInputNode", "TerminalOutputNode", "ServerNode", "EchoServerNode" };
         JList<String> list = new JList<>(listData);
 
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -52,19 +58,21 @@ public class App extends JFrame {
                     String selectedValue = list.getSelectedValue();
                     System.out.println("occured double click event - created node " + selectedValue); // TODO log.
 
-                    NodeBlock nodeBlock = new NodeBlock(selectedValue);
+                    NodeBlock nodeBlock = null;
 
                     try {
                         Class<?> clazz = Class.forName("com.example.node." + selectedValue);
                         Constructor<?> ctor = clazz.getConstructor(String.class);
 
-                        var node = ctor.newInstance("test"); // TODO change name.
+                        var node = ctor.newInstance("node" + Node.getCount());
 
                         assert (node instanceof Node);
                         CodeBuilder.add((Node) node);
 
-                    } catch (Exception ignore) {
-                        ignore.printStackTrace(); // TODO log.
+                        nodeBlock = new NodeBlock(selectedValue, (Node) node);
+
+                    } catch (Exception ex) {
+                        log.error(ex.getMessage());
                     }
 
                     c.add(nodeBlock);
@@ -116,6 +124,7 @@ public class App extends JFrame {
         gbc.gridy = 0;
 
         var canvas = new Canvas();
+        NodeBlock.set(canvas); // node간 연결시 선을 그려주기 위해 캔버스를 set 해줌.
         canvas.setPreferredSize(new Dimension((int) (getWidth() * 0.75), getHeight()));
 
         c.add(canvas, gbc);
@@ -142,7 +151,19 @@ public class App extends JFrame {
         runButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                CodeBuilder.getCode(); // TODO create code and compile, run.
+                String s = CodeBuilder.getCode(); // TODO and compile, run.
+
+                File file = new File("Test.java");
+                if (file.exists()) file.delete();
+
+                try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
+                    file.createNewFile();
+
+                    bw.write(s);
+                    bw.flush();
+
+                } catch (Exception ignore) {
+                }
             }
         });
 

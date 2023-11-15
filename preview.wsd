@@ -15,25 +15,42 @@ abstract class ActiveNode {
 }
 
 abstract class WirableNode {
-    +wires: Wire[]
+    -wires: Set<Wire>
 }
 
-abstract class InputNode {
+interface InputNode {
 }
 
-abstract class OutputNode {
+interface OutputNode {
 }
 
-class TerminalNode {
+class TerminalInputNode {
     -br: BufferedReader
 }
 
+class ServerNode {
+}
+
+class HttpNode {
+}
+
+class Message {
+}
 
 Node <|-- ActiveNode
 ActiveNode <|-- WirableNode
-InputNode <|-- TerminalNode
-WirableNode <|-- InputNode
-WirableNode <|-- OutputNode
+InputNode <|.. TerminalInputNode
+OutputNode <|.. TerminalOutputNode
+WirableNode <|-- TerminalInputNode
+WirableNode <|-- TerminalOutputNode
+WirableNode <|-- ServerNode
+ServerNode <|-- EchoServerNode
+OutputNode <|.. ServerNode
+OutputNode <|.. HttpNode
+InputNode <|.. HttpNode
+
+JSONObject <|-- Message
+WirableNode <|-- HttpNode
 
 Wire *-- WirableNode
 

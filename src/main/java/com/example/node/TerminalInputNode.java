@@ -3,10 +3,10 @@ package com.example.node;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+import com.example.Wire;
 import com.example.message.Message;
-import com.example.message.TextMessage;
 
-public class TerminalInputNode extends InputNode {
+public class TerminalInputNode extends WirableNode implements InputNode {
     private BufferedReader br;
 
     public TerminalInputNode(String name) {
@@ -21,10 +21,13 @@ public class TerminalInputNode extends InputNode {
     @Override
     public void process() {
         try {
-            String line = br.readLine();
-            Message msg = new TextMessage(line);
+            Message msg = new Message();
+            msg.put("message", br.readLine());
 
-            // TODO output(msg);
+            for (var wire : wires) {
+                wire.put(msg);
+            }
+            
         } catch (Exception ignore) {
         }
     }
@@ -35,5 +38,16 @@ public class TerminalInputNode extends InputNode {
             br = null;
         } catch (Exception ignroe) {
         }
+    }
+
+    @Override
+    public void wireOut(Wire wire) {
+        wires.add(wire);
+    }
+
+    @Override
+    public boolean canWire(WirableNode other) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'canWire'");
     }
 }

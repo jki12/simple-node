@@ -1,21 +1,22 @@
 package com.example.node;
 
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 public abstract class ActiveNode extends Node implements Runnable {
+    private static final int DEFAULT_INTERVAL = 1_000;
+
     protected long startTime;
     protected Thread thread;
-    protected long interval = 1_000;
+    @Setter
+    protected long interval;
 
     protected ActiveNode(String name) {
         super(name);
 
         thread = new Thread(this, name);
-    }
-
-    public void setInterval(int interval) {
-        this.interval = interval;
+        interval = DEFAULT_INTERVAL;
     }
 
     public void start() {
