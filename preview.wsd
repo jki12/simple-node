@@ -37,6 +37,9 @@ class HttpNode {
 class Message {
 }
 
+class LogNode {
+}
+
 Node <|-- ActiveNode
 ActiveNode <|-- WirableNode
 InputNode <|.. TerminalInputNode
@@ -44,6 +47,7 @@ OutputNode <|.. TerminalOutputNode
 WirableNode <|-- TerminalInputNode
 WirableNode <|-- TerminalOutputNode
 WirableNode <|-- ServerNode
+WirableNode <|-- LogNode
 ServerNode <|-- EchoServerNode
 OutputNode <|.. ServerNode
 OutputNode <|.. HttpNode
